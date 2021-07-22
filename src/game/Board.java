@@ -65,7 +65,11 @@ public class Board {
 
         for (int fileCounter = 0; fileCounter < spaces.length; fileCounter++) {
             for (int rankCounter = 0; rankCounter < spaces.length; rankCounter++) {
-                System.out.print(iBoard.spaces[fileCounter][rankCounter].getPiece().getFenSymbol());
+                try {
+                    System.out.print(iBoard.spaces[fileCounter][rankCounter].getPiece().getFenSymbol());
+                } catch (Exception e) {
+                    System.out.print(" ");
+                }
                 System.out.print(" ");
             }
             System.out.println();
