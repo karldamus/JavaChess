@@ -1,15 +1,20 @@
 package pieces;
 
+import game.Board;
+
 import javax.swing.*;
 
 public abstract class Piece {
     private boolean white;
     private char fenSymbol;
     private ImageIcon pieceIcon;
+    private boolean hasMoved;
+
 
     public Piece(boolean white, char fenSymbol) {
         this.white = white;
         this.fenSymbol = fenSymbol;
+        this.hasMoved = false;
 
         // image icon setup
         String prefix = this.isWhite() ? "w" : "b";
@@ -22,7 +27,7 @@ public abstract class Piece {
         return false;
     }
 
-//    public abstract boolean isLegalMove(int initialFile, int initialRank, int finalFile, int finalRank);
+    public abstract boolean isLegalMove(Board board, int initialRank, int initialFile, int finalRank, int finalFile);
 
     // ==========================
 
@@ -40,5 +45,13 @@ public abstract class Piece {
 
     public void setPieceIcon(ImageIcon pieceIcon) {
         this.pieceIcon = pieceIcon;
+    }
+
+    public boolean hasMoved() {
+        return hasMoved;
+    }
+
+    public void setHasMoved(boolean hasMoved) {
+        this.hasMoved = hasMoved;
     }
 }
