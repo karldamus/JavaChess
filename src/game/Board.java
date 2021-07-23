@@ -2,6 +2,8 @@ package game;
 
 import pieces.*;
 
+import java.util.Scanner;
+
 public class Board {
     private static final int RANKS = 8;
     private static final int FILES = 8;
@@ -105,18 +107,20 @@ public class Board {
         if (initialPiece == null)
             return;
 
-        System.out.println("Initial piece colour: " + (initialPiece.isWhite() ? "W" : "B"));
-        System.out.println("Colour to move: " + (whiteToMove ? "W" : "B"));
-
         // check if turn to move
         if ((initialPiece.isWhite() != whiteToMove)) {
-            System.out.println("Not turn to move");
+            System.out.println("Not your turn to move.");
             return;
         }
 
+        // check if piece moved from spot
+        if ((initialRank == finalRank) && (initialFile == finalFile)) {
+            System.out.println("You have to move the piece from it's square.");
+            return;
+        }
 
-        // piece selected and piece at destination (finalFile && finalRank)
-        if (initialPiece != null && finalPiece != null) {
+        // check if piece at destination (finalFile && finalRank)
+        if (finalPiece != null) {
             // same colour check
             if (initialPiece.isSameColour(finalPiece)) {
                 System.out.println("You can't capture your own piece!");
@@ -124,15 +128,23 @@ public class Board {
             }
         }
 
+        if (!(initialPiece.isLegalMove(this, initialRank, initialFile, finalRank, finalFile))) {
+            System.out.println("Illegal Move");
+            return;
+        }
+
         // all ok, move piece
-        this.spaces[finalRank][finalFile].clearPiece();
-        this.spaces[finalRank][finalFile].setPiece(initialPiece);
-        this.spaces[initialRank][initialFile].clearPiece();
+        spaces[finalRank][finalFile].clearPiece();
+        spaces[finalRank][finalFile].setPiece(initialPiece);
+        spaces[initialRank][initialFile].clearPiece();
+
+        // individual piece updates
+        spaces[finalRank][finalFile].getPiece().setHasMoved(true);
+
+
+        this.printPiecesOnBoard();
 
         finishMove();
-
-//        if (spaces[initialFile][initialRank].getPiece().isLegalMove(initialFile, initialRank, finalFile, finalRank))
-
     }
 
     public void finishMove() {
@@ -144,25 +156,14 @@ public class Board {
 
     public static void main(String[] args) {
         Board board = new Board();
-//        board.printBoardGrid();
-//        board.printPiecesOnBoard();
 
         board.printPiecesOnBoard();
-//        board.movePiece(0,0,7,4);
-        board.movePiece('a', 2, 'b', 1);
+
+        board.movePiece('e', 1, 'a', 3);
         board.movePiece('b', 7, 'b', 5);
         board.movePiece('c', 2, 'c', 3);
-        board.printPiecesOnBoard();
-
 
 //        board.printPiecesOnBoard();
-//        board.movePiece(1,1,3,3);
-//        board.printPiecesOnBoard();
-
-
-
-//        board.printPiecesOnBoard();
-//        board.printPieceColours();
     }
 
     private void printPieceColours() {
@@ -218,5 +219,9 @@ public class Board {
 
         System.out.println("===============");
 
+    }
+
+    public Space[][] getSpaces() {
+        return this.spaces;
     }
 }
