@@ -5,3 +5,9 @@
 Overall, this method is much better and more concise than my previous attempt at a chess game. I have since made the previous chess repository private as I shall be continuing with this new edition.
 
 I learned lots in the many mistakes I made with the previous edition, I hope to plan better and overcome difficulties before they turn into impossibilities.
+
+### July 22, 2021; 10:48pm
+Working movement with basic legal move checks:
+- Check if piece selected.
+- Check if turn to move. Disallow if not on turn. Switch turn if move complete.
+- Check if piece is trying to capture another. Disallow if same colour.
