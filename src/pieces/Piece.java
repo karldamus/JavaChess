@@ -16,6 +16,14 @@ public abstract class Piece {
         this.pieceIcon = new ImageIcon("sprites/" + prefix + fenSymbol + "60.png");
     }
 
+    public boolean isSameColour(Piece piece) {
+        if ((this.isWhite() && piece.isWhite()) || (!this.isWhite() && !piece.isWhite()))
+            return true;
+        return false;
+    }
+
+//    public abstract boolean isLegalMove(int initialFile, int initialRank, int finalFile, int finalRank);
+
     // ==========================
 
     public boolean isWhite() {
