@@ -10,10 +10,9 @@ public abstract class Piece {
     private ImageIcon pieceIcon;
     private boolean hasMoved;
 
-
     public Piece(boolean white, char fenSymbol) {
         this.white = white;
-        this.fenSymbol = fenSymbol;
+        this.fenSymbol = isWhite() ? Character.toUpperCase(fenSymbol) : fenSymbol;
         this.hasMoved = false;
 
         // image icon setup
