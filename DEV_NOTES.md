@@ -11,3 +11,15 @@ Working movement with basic legal move checks:
 - Check if piece selected.
 - Check if turn to move. Disallow if not on turn. Switch turn if move complete.
 - Check if piece is trying to capture another. Disallow if same colour.
+
+### July 25, 2021; 12:16am
+Working FEN notation generation (minus en passant).
+
+Mostly working move list. Not included yet:
+- No fen symbol for pawn movements.
+- Pawn promotion.
+- Draw offer.
+- Castling.
+- Check.
+- Checkmate.
+- End of game.
