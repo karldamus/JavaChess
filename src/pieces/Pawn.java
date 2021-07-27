@@ -20,7 +20,7 @@ public class Pawn extends Piece {
             return false;
         // check if diagonal 1 square move is capturing a piece
         if (pawnRankDistance == 1 && pawnFileDistance == 1) {
-            if (board.getSpaces()[finalRank][finalFile].getPiece() == null)
+            if (board.getBoard()[finalRank][finalFile].getPiece() == null)
                 return false;
         }
         // backwards movement check
