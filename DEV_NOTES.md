@@ -23,3 +23,18 @@ Mostly working move list. Not included yet:
 - Check.
 - Checkmate.
 - End of game.
+
+### July 27, 2021; 12:11am
+Cleaned up Board class
+- updateMoveList() moved to Movelist class.
+    - Movelist object is now implemented in Board class.
+- generateFenString() and helper methods (castlingCheck & hasPieceMoved) moved to Fen class.
+    - Fen object is now implemented in Board.
+    
+Added Constants interface to remove repetitiveness. 
+
+Added Move class to create Move objects (to be implemented next time).
+
+Movelist now displays proper move number, and doesn't display fen symbol for pawn movements.
+
+
