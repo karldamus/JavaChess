@@ -11,7 +11,7 @@ public class King extends Piece {
 
     @Override
     public boolean isLegalMove(Board board, int initialRank, int initialFile, int finalRank, int finalFile) {
-        Space[][] spaces = board.getSpaces();
+        Space[][] spaces = board.getBoard();
 
         // check if movement distance is greater than one square
         if ((Math.abs(finalRank - initialRank) > 1) || (Math.abs(finalFile - initialFile) > 1)) {
