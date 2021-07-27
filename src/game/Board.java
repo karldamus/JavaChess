@@ -11,7 +11,7 @@ public class Board implements Constants {
     private boolean whiteToMove = true;
     private boolean lastMoveEnPassant = false;
 
-    private Movelist moveList = new Movelist();
+    private Movelist movelist = new Movelist();
     private Fen fenString;
 
     public static final Piece[] whitePieces = new Piece[] {
@@ -141,7 +141,7 @@ public class Board implements Constants {
         }
 
         // update moveList
-        moveList.updateMoveList(this, initialRank, initialFile, finalRank, finalFile, initialPiece, finalPiece != null);
+        movelist.updateMoveList(new Move(this, initialRank, initialFile, finalRank, finalFile, initialPiece, finalPiece != null));
 
         // all ok, move piece
         board[finalRank][finalFile].clearPiece();
@@ -197,7 +197,7 @@ public class Board implements Constants {
 //
 //        System.out.println(fenString.toString());
 
-        board.moveList.printMoveList();
+        board.movelist.printMoveList();
         board.fenString.printFenString();
 
 //        System.out.format("%1s%10d%10s", "test1", 2, "test2");
