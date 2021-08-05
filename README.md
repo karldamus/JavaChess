@@ -1,7 +1,7 @@
 # JavaChess
- The classic game of chess. Written in java.
+ The classic game of chess. Written in Java using a 2d array, custom piece classes, and Swing GUI.
 - - -
-See [Dev Notes](https://github.com/karldamus/JavaChess/blob/main/DEV_NOTES.md) for progress updates.
+Work in progress: see [Dev Notes](https://github.com/karldamus/JavaChess/blob/main/DEV_NOTES.md) for progress updates.
 - - -
 ### Resources
 - [FEN notation](http://kirill-kryukov.com/chess/doc/fen.html)
