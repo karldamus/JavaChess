@@ -2,7 +2,7 @@ package game;
 
 import pieces.*;
 
-public class Board implements Constants {
+public class Board implements Constants  {
     private Space[][] board = new Space[RANKS][FILES];
 
     private static int halfmoveNumber = 0;
@@ -91,6 +91,7 @@ public class Board implements Constants {
             }
         }
 
+        // movePiece method with 2d array values
         movePiece(initialRankIndex, initialFileIndex, finalRankIndex, finalFileIndex);
     }
 
@@ -135,10 +136,13 @@ public class Board implements Constants {
             }
         }
 
+        // check if Piece can legally move
         if (!(initialPiece.isLegalMove(this, initialRank, initialFile, finalRank, finalFile))) {
             System.out.println("Illegal Move");
             return;
         }
+
+        // check if in check, then check if the move avoids check
 
         // update moveList
         movelist.updateMoveList(new Move(this, initialRank, initialFile, finalRank, finalFile, initialPiece, finalPiece != null));
@@ -179,6 +183,52 @@ public class Board implements Constants {
         this.whiteToMove = !this.whiteToMove;
     }
 
+    /**
+     *
+     * @param white colour in question of being in check.
+     * @return 0 if no piece is attacking the king; +1 for every piece attacking the king
+     */
+    public int inCheck(boolean white) {
+        int rankOfKing = -1;
+        int fileOfKing = -1;
+        int inCheck = 0;
+
+        // find rank and file of King
+        for (int rank = 0; rank < RANKS; rank++) {
+            for (int file = 0; file < FILES; file++) {
+                try {
+                    Piece piece = getBoard()[rank][file].getPiece();
+                    // if
+                    if ((piece.isWhite() && white) || (!piece.isWhite() && !white)) {
+                        rankOfKing = rank;
+                        fileOfKing = file;
+                        break; // break inner for loop
+                    }
+                } catch (Exception e) { }
+            }
+
+            // break outer for loop if king already found
+            if (rankOfKing != -1)
+                break;
+        }
+
+        // check if king is in check
+        for (int rank = 0; rank < RANKS; rank++) {
+            for (int file = 0; file < FILES; file++) {
+                try {
+                    Piece piece = getBoard()[rank][file].getPiece();
+                    // if
+                    if ((piece.isWhite() && !white) || (!piece.isWhite() && white)) {
+                        if (piece.isLegalMove(this, rank, file, rankOfKing, fileOfKing))
+                            inCheck += 1;
+                    }
+                } catch (Exception e) { }
+            }
+        }
+
+        return inCheck;
+    }
+
     // ========================
 
     public static void main(String[] args) {
@@ -208,10 +258,10 @@ public class Board implements Constants {
     private void printPieceColours() {
         Board iBoard = this;
 
-        for (int fileCounter = 0; fileCounter < board.length; fileCounter++) {
-            for (int rankCounter = 0; rankCounter < board.length; rankCounter++) {
+        for (int rankCounter = 0; rankCounter < board.length; rankCounter++) {
+            for (int fileCounter = 0; fileCounter < board.length; fileCounter++) {
                 try {
-                    System.out.print(iBoard.board[fileCounter][rankCounter].getPiece().isWhite() ? "W" : "B");
+                    System.out.print(iBoard.board[rankCounter][fileCounter].getPiece().isWhite() ? "W" : "B");
                 } catch (Exception e) {
                     System.out.print(" ");
                 }
@@ -226,10 +276,10 @@ public class Board implements Constants {
 
         System.out.println("===============");
 
-        for (int fileCounter = 0; fileCounter < board.length; fileCounter++) {
-            for (int rankCounter = 0; rankCounter < board.length; rankCounter++) {
-                System.out.print(iBoard.board[fileCounter][rankCounter].getFileChar());
-                System.out.print(iBoard.board[fileCounter][rankCounter].getRankChar());
+        for (int rankCounter = 0; rankCounter < board.length; rankCounter++) {
+            for (int fileCounter = 0; fileCounter < board.length; fileCounter++) {
+                System.out.print(iBoard.board[rankCounter][fileCounter].getFileChar());
+                System.out.print(iBoard.board[rankCounter][fileCounter].getRankChar());
                 System.out.print(" ");
             }
             System.out.println();
@@ -244,10 +294,10 @@ public class Board implements Constants {
 
         System.out.println("===============");
 
-        for (int fileCounter = 0; fileCounter < board.length; fileCounter++) {
-            for (int rankCounter = 0; rankCounter < board.length; rankCounter++) {
+        for (int rankCounter = 0; rankCounter < board.length; rankCounter++) {
+            for (int fileCounter = 0; fileCounter < board.length; fileCounter++) {
                 try {
-                    System.out.print(iBoard.board[fileCounter][rankCounter].getPiece().getFenSymbol());
+                    System.out.print(iBoard.board[rankCounter][fileCounter].getPiece().getFenSymbol());
                 } catch (Exception e) {
                     System.out.print(" ");
                 }
