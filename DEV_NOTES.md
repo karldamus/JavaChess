@@ -1,3 +1,24 @@
+### August 5, 2021; 
+Added isLegalMove functionality to the following classes:
+- Bishop
+- King
+- Pawn
+- Queen
+- Rook
+
+Deprecated Movecheck class.
+
+Added pieceInWay method using directional vectors courtesy of 'Andreas Dolk' on Stackoverflow.
+
+Added constants used for Swing GUI to Constants class.
+
+Implemented inCheck method to Board class (currently not working correctly).
+
+Added initial Swing GUI setup to Game class.
+
+### August 4, 2021; 11:32pm
+Add inCheck method to Board class to determine if a king of either colour is in check.
+
 ### July 27, 2021; 12:11am
 Cleaned up Board class
 - updateMoveList() moved to Movelist class.
