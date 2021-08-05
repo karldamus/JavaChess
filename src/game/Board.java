@@ -4,13 +4,10 @@ import pieces.*;
 
 public class Board implements Constants  {
     private Space[][] board = new Space[RANKS][FILES];
-
     private static int halfmoveNumber = 0;
     private static int fullMoveNumber = 1;
-
     private boolean whiteToMove = true;
     private boolean lastMoveEnPassant = false;
-
     private Movelist movelist = new Movelist();
     private Fen fenString;
 
@@ -42,6 +39,9 @@ public class Board implements Constants  {
             this.board[7][i].setPiece(whitePieces[i]);
             this.board[6][i].setPiece(new Pawn(true));
         }
+
+        // set fenString
+        fenString = new Fen(this, whiteToMove, halfmoveNumber, fullMoveNumber);
     }
 
     /**
@@ -105,6 +105,7 @@ public class Board implements Constants  {
     public void movePiece(int initialRank, int initialFile, int finalRank, int finalFile) {
         Piece initialPiece = null;
         Piece finalPiece = null;
+        Board tmpBoard = this;
 
         try {
             initialPiece = board[initialRank][initialFile].getPiece();
@@ -136,15 +137,36 @@ public class Board implements Constants  {
             }
         }
 
-        // check if Piece can legally move
+        // check if pieces are in between (disregard knight)
+//        if (Character.toLowerCase(initialPiece.getFenSymbol()) != 'n') {
+//
+//        }
+
+        // check if in check, then check if the move avoids check
+//        int inCheckCounter = this.inCheck(!initialPiece.isWhite());
+//        if (inCheckCounter > 0) {
+//            // if multiple pieces are attacking the king and if the king is not being moved, it is not a valid move
+//            if (inCheckCounter > 1) {
+//                if (Character.toLowerCase(initialPiece.getFenSymbol()) != 'k')
+//                    return;
+//            } else {
+//                // setup tmp board and test if check is blocked
+//                tmpBoard.getBoard()[initialRank][initialFile].setPiece(null);
+//                tmpBoard.getBoard()[finalRank][finalFile].setPiece(initialPiece);
+//
+//                if (tmpBoard.inCheck(initialPiece.isWhite()) > 0)
+//                    return;
+//            }
+//        }
+
+        // check if individual Piece can legally move
         if (!(initialPiece.isLegalMove(this, initialRank, initialFile, finalRank, finalFile))) {
             System.out.println("Illegal Move");
             return;
         }
 
-        // check if in check, then check if the move avoids check
-
         // update moveList
+        System.out.println("Updating movelist");
         movelist.updateMoveList(new Move(this, initialRank, initialFile, finalRank, finalFile, initialPiece, finalPiece != null));
 
         // all ok, move piece
@@ -236,23 +258,16 @@ public class Board implements Constants  {
 
         board.printPiecesOnBoard();
 
-        board.movePiece('e', 2, 'e', 3);
-        board.movePiece('b', 7, 'b', 5);
-        board.movePiece('c', 2, 'c', 3);
-        board.movePiece('a', 8, 'a', 6);
-        board.movePiece('a', 2, 'a', 3);
-        board.movePiece('h', 8, 'h', 6);
+        board.movePiece('e', 2, 'e', 4);
+        board.movePiece('d', 7, 'd', 5);
+        board.movePiece('f', 1, 'd', 3);
+        board.movePiece('d', 8, 'd', 6);
+        board.movePiece('d', 3, 'e', 2);
+        board.movePiece('d', 6, 'f', 5);
 
-//        fenString = new Fen(this, whiteToMove, halfmoveNumber, fullMoveNumber);
-//
-//        System.out.println(fenString.toString());
-
-        board.movelist.printMoveList();
+//        board.movelist.printMoveList();
         board.fenString.printFenString();
 
-//        System.out.format("%1s%10d%10s", "test1", 2, "test2");
-
-//        board.printPiecesOnBoard();
     }
 
     private void printPieceColours() {
