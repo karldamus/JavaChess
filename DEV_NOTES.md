@@ -1,4 +1,4 @@
-### August 5, 2021; 
+### August 5, 2021; 12:58am 
 Added isLegalMove functionality to the following classes:
 - Bishop
 - King
@@ -16,8 +16,12 @@ Implemented inCheck method to Board class (currently not working correctly).
 
 Added initial Swing GUI setup to Game class.
 
+- - -
+
 ### August 4, 2021; 11:32pm
 Add inCheck method to Board class to determine if a king of either colour is in check.
+
+- - -
 
 ### July 27, 2021; 12:11am
 Cleaned up Board class
@@ -32,6 +36,8 @@ Added Move class to create Move objects (to be implemented next time).
 
 Movelist now displays proper move number, and doesn't display fen symbol for pawn movements.
 
+- - -
+
 ### July 25, 2021; 12:16am
 Working FEN notation generation (minus en passant).
 
@@ -44,11 +50,15 @@ Mostly working move list. Not included yet:
 - Checkmate.
 - End of game.
 
+- - -
+
 ### July 22, 2021; 10:48pm
 Working movement with basic legal move checks:
 - Check if piece selected.
 - Check if turn to move. Disallow if not on turn. Switch turn if move complete.
 - Check if piece is trying to capture another. Disallow if same colour.
+
+- - -
 
 ### July 22, 2021; 9:26am
  
@@ -57,11 +67,3 @@ Working movement with basic legal move checks:
 Overall, this method is much better and more concise than my previous attempt at a chess game. I have since made the previous chess repository private as I shall be continuing with this new edition.
 
 I learned lots in the many mistakes I made with the previous edition, I hope to plan better and overcome difficulties before they turn into impossibilities.
-
-
-
-
-
-
-
-
