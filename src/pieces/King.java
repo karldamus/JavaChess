@@ -12,12 +12,28 @@ public class King extends Piece {
     @Override
     public boolean isLegalMove(Board board, int initialRank, int initialFile, int finalRank, int finalFile) {
         Space[][] spaces = board.getBoard();
+        Board tmpBoard = board;
+        Piece tmpPiece = board.getBoard()[initialRank][initialFile].getPiece();
+
+        int absRank = Math.abs(finalRank - initialRank);
+        int absFile = Math.abs(finalFile - initialFile);
 
         // check if movement distance is greater than one square
-        if ((Math.abs(finalRank - initialRank) > 1) || (Math.abs(finalFile - initialFile) > 1)) {
-            System.out.println("The King can only move a distance of 1.");
+//        if ((absRank > 1) || (absFile > 1)) {
+//            System.out.println("The King can only move a distance of 1.");
+//            return false;
+//        }
+
+        // setup tmp board
+        tmpBoard.getBoard()[initialRank][initialFile].setPiece(null);
+        tmpBoard.getBoard()[finalRank][finalFile].setPiece(tmpPiece);
+
+        // if tmpBoard with new king position results in the king being in check, it is not a valid king move
+        if (tmpBoard.inCheck(tmpPiece.isWhite()) > 0)
             return false;
-        }
+
+
+
         // check if opposing king is within 1 square of destination square
         // https://stackoverflow.com/a/5802694/13280626
         // https://codereview.stackexchange.com/a/68638
@@ -33,17 +49,17 @@ public class King extends Piece {
 //        }
 
 
-        // check if destination square is under attack
-        for (int rank = 0; rank < spaces.length; rank++) {
-            for (int file = 0; file < spaces.length; file++) {
-                if (spaces[rank][file].getPiece() != null && (spaces[rank][file].getPiece().isWhite() != this.isWhite())) {
-                    if (spaces[rank][file].getPiece().isLegalMove(board, rank, file, finalRank, finalFile)) {
-                        System.out.println("The King cannot move into check.");
-                        return false;
-                    }
-                }
-            }
-        }
+//        // check if destination square is under attack
+//        for (int rank = 0; rank < spaces.length; rank++) {
+//            for (int file = 0; file < spaces.length; file++) {
+//                if (spaces[rank][file].getPiece() != null && (spaces[rank][file].getPiece().isWhite() != this.isWhite())) {
+//                    if (spaces[rank][file].getPiece().isLegalMove(board, rank, file, finalRank, finalFile)) {
+//                        System.out.println("The King cannot move into check.");
+//                        return false;
+//                    }
+//                }
+//            }
+//        }
 
         return true;
     }

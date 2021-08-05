@@ -9,17 +9,20 @@ public class Pawn extends Piece {
 
     @Override
     public boolean isLegalMove(Board board, int initialRank, int initialFile, int finalRank, int finalFile) {
-        int pawnRankDistance = Math.abs(finalRank - initialRank);
-        int pawnFileDistance = Math.abs(finalFile - initialFile);
+        int absRank = Math.abs(finalRank - initialRank);
+        int absFile = Math.abs(finalFile - initialFile);
 
         // greater than 2 squares on the rank or 1 square on the file
-        if (pawnRankDistance > 2 || pawnFileDistance > 1)
+        if (absRank > 2 || absFile > 1)
             return false;
         // 2 space first move check
-        if (pawnRankDistance == 2 && this.hasMoved())
+        if (absRank == 2 && this.hasMoved())
+            return false;
+        // diagonal move on two square forwards
+        if (absRank == 2 && absFile > 0)
             return false;
         // check if diagonal 1 square move is capturing a piece
-        if (pawnRankDistance == 1 && pawnFileDistance == 1) {
+        if (absRank == 1 && absFile == 1) {
             if (board.getBoard()[finalRank][finalFile].getPiece() == null)
                 return false;
         }
