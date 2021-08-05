@@ -34,7 +34,7 @@ public class Movelist implements Constants {
 
         movelist[lastIndexAvailable] = move;
 
-        // update moveNumber
+        // update moveNumber if black moved
         if (!move.getPieceMoved().isWhite())
             moveNumber += 1;
     }
