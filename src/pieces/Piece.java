@@ -3,6 +3,7 @@ package pieces;
 import game.Board;
 
 import javax.swing.*;
+import java.awt.*;
 
 public abstract class Piece {
     private boolean white;
@@ -27,6 +28,30 @@ public abstract class Piece {
     }
 
     public abstract boolean isLegalMove(Board board, int initialRank, int initialFile, int finalRank, int finalFile);
+
+    /**
+     * directional vector-matrix code sourced from 'Andreas Dolk' on Stackoverflow -- see README
+     * @param board
+     * @param initialRank
+     * @param initialFile
+     * @param finalRank
+     * @param finalFile
+     * @return true if piece in way, false otherwise
+     */
+    public boolean pieceInWay(Board board, int initialRank, int initialFile, int finalRank, int finalFile) {
+        Point direction = new Point((int) Math.signum(finalRank - initialRank), (int) Math.signum(finalFile - initialFile));
+        Point current = new Point((int) (initialRank + direction.getX()), (int) (initialFile + direction.getY()));
+        Point destination = new Point(finalRank, finalFile);
+
+        while (!current.equals(destination)) {
+            if (board.getBoard()[current.x][current.y].getPiece() != null)
+                return true;
+            current.x = current.x + direction.x;
+            current.y = current.y + direction.y;
+        }
+
+        return false;
+    }
 
     // ==========================
 
