@@ -32,7 +32,7 @@ Cleaned up Board class
 
 Added Constants interface to remove repetitiveness.
 
-Added Move class to create Move objects (to be implemented next time).
+Added Move class to create Move objects (to be implemented soon).
 
 Movelist now displays proper move number, and doesn't display fen symbol for pawn movements.
 
