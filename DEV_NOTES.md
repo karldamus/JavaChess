@@ -27,8 +27,8 @@ Add inCheck method to [Board](https://github.com/karldamus/JavaChess/blob/main/s
 Cleaned up [Board](https://github.com/karldamus/JavaChess/blob/main/src/game/Board.java)
 - updateMoveList method moved to [Movelist](https://github.com/karldamus/JavaChess/blob/main/src/game/Movelist.java).
   - Movelist object is now implemented in [Board](https://github.com/karldamus/JavaChess/blob/main/src/game/Board.java).
-- generateFenString method and helper methods (castlingCheck & hasPieceMoved) moved to Fen class.
-  - Fen object is now implemented in Board.
+- generateFenString method and helper methods (castlingCheck & hasPieceMoved) moved to [Fen](https://github.com/karldamus/JavaChess/blob/main/src/game/Fen.java).
+  - Fen object is now implemented in [Board](https://github.com/karldamus/JavaChess/blob/main/src/game/Board.java).
 
 Added [Constants](https://github.com/karldamus/JavaChess/blob/main/src/game/Constants.java) interface to remove repetitiveness.
 
