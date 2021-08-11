@@ -2,16 +2,43 @@ package game;
 
 import pieces.Piece;
 
-public class Space {
+import javax.swing.*;
+
+public class Space implements Constants {
     private int rank;
     private char file;
     private boolean white;
     private Piece piece;
 
+    private JPanel spaceJPanel;
+
     public Space(boolean isWhite, int rank, char file) {
         setWhite(isWhite);
         setRank(rank);
         setFile(file);
+
+        setupJPanel();
+    }
+
+    private void setupJPanel() {
+        spaceJPanel = new JPanel();
+        spaceJPanel.setSize(LABEL_SIZE);
+        spaceJPanel.setMaximumSize(LABEL_SIZE);
+        spaceJPanel.setMinimumSize(LABEL_SIZE);
+
+        spaceJPanel.setBackground(isWhite() ? WHITE_COLOR : BLACK_COLOR);
+        spaceJPanel.setName(Character.toString(file) + Integer.toString(rank));
+    }
+
+    public void setPiece(Piece piece) {
+        this.piece = piece;
+        if (piece != null)
+            spaceJPanel.add(piece.getPieceJLabel());
+    }
+
+    public void clearPiece() {
+        this.piece = null;
+//        spaceJPanel.remove(0);
     }
 
     // get____Index methods are used for array purposes
@@ -71,11 +98,11 @@ public class Space {
         return piece;
     }
 
-    public void setPiece(Piece piece) {
-        this.piece = piece;
+    public JPanel getSpaceJPanel() {
+        return spaceJPanel;
     }
 
-    public void clearPiece() {
-        this.piece = null;
+    public void setSpaceJPanel(JPanel spaceJPanel) {
+        this.spaceJPanel = spaceJPanel;
     }
 }
