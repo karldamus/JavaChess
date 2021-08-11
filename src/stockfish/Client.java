@@ -24,6 +24,12 @@ public class Client {
 
     }
 
+    /**
+     * Used to start the Stockfish engine.
+     * @param cmd can be anything, but should only be "stockfish".
+     *
+     * @see game.Board#Board()
+     */
     public void start(String cmd) {
         var processBuilder = new ProcessBuilder(cmd);
         try {
@@ -35,6 +41,9 @@ public class Client {
         }
     }
 
+    /**
+     * Close the current running process.
+     */
     public void close() {
         if (this.process.isAlive())
             this.process.destroy();
@@ -46,6 +55,18 @@ public class Client {
         }
     }
 
+    /**
+     * Take a command and run it.
+     * @param cmd the command to run.
+     * @param commandProcessor the current process to run the command in.
+     * @param breakCondition
+     * @param timeout the length of time until timeout.
+     * @param <T>
+     * @return the output of the command.
+     * @throws InterruptedException
+     * @throws ExecutionException
+     * @throws TimeoutException
+     */
     public <T> T command(String cmd, Function<List<String>, T> commandProcessor, Predicate<String> breakCondition, long timeout)
             throws InterruptedException, ExecutionException, TimeoutException {
 

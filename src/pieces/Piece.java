@@ -66,12 +66,13 @@ public abstract class Piece implements Constants {
     public abstract boolean isLegalMove(Board board, int initialRank, int initialFile, int finalRank, int finalFile);
 
     /**
-     * directional vector-matrix code sourced from 'Andreas Dolk' on Stackoverflow -- see README
-     * @param board
-     * @param initialRank
-     * @param initialFile
-     * @param finalRank
-     * @param finalFile
+     * Determine whether a piece is in way using directional vectors.
+     * <li>Directional vector-matrix code sourced from 'Andreas Dolk' on Stackoverflow -- see README</li>
+     * @param board the board in play.
+     * @param initialRank the initial rank of the piece.
+     * @param initialFile the initial file of the piece.
+     * @param finalRank the destination rank of the piece.
+     * @param finalFile the destination file of the piece.
      * @return true if piece in way, false otherwise
      */
     public boolean pieceInWay(Board board, int initialRank, int initialFile, int finalRank, int finalFile) {
@@ -89,6 +90,13 @@ public abstract class Piece implements Constants {
         return false;
     }
 
+    /**
+     * Play the pieces sound.
+     * @param takeMove Determine whether to play the 'takeMove' sound or the regular sound.
+     * @throws UnsupportedAudioFileException
+     * @throws IOException
+     * @throws LineUnavailableException
+     */
     public void playSound(boolean takeMove) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(movePieceSound).getAbsoluteFile());
         Clip clip = AudioSystem.getClip();

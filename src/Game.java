@@ -75,7 +75,7 @@ public class Game extends JLayeredPane implements Constants {
         fenStringContainer = new JPanel();
         fenString = new JTextPane();
         fenString.setContentType("text/html");
-        fenString.setText("<html>"+BASE_FEN_STRING+"</html>");
+        fenString.setText("<html>"+board.getFen().getFenString()+"</html>");
         fenString.setEditable(false);
         fenStringContainer.add(fenString);
         gameJFrame.add(fenStringContainer, BorderLayout.SOUTH);
