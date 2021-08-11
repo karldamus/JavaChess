@@ -41,7 +41,10 @@ public class Board implements Constants  {
     };
 
     /**
+     * Create a 'chess board' to host squares and pieces.
      *
+     * @see Piece
+     * @see Space
      */
     public Board() {
         // Start stockfish engine if pass n' play game (two players)
@@ -71,6 +74,28 @@ public class Board implements Constants  {
     }
 
     /**
+     * Move piece method allows one String argument. For example:
+     * "e2e4" or "d6d4" ... etc.
+     * @param pattern the two squares involved in movement.
+     *
+     * @see #movePiece(char, int, char, int)
+     */
+    public void movePiece(String pattern) {
+        String[] arrPattern = pattern.split("");
+
+        try {
+            char fileOrigin = pattern.charAt(0);
+            char fileDestination = pattern.charAt(2);
+            int rankOrigin = Integer.parseInt(arrPattern[1]);
+            int rankDestination = Integer.parseInt(arrPattern[3]);
+
+            this.movePiece(fileOrigin, rankOrigin, fileDestination, rankDestination);
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+    }
+
+    /**
      * Move piece method to allow for movement with chess notation and not array index positions.
      * @param initialRank Integer from 1-8
      * @param initialFile Character from a-h
@@ -84,6 +109,8 @@ public class Board implements Constants  {
      *                  board.movePiece(0,0,5,2);
      *                  which means the same thing but corresponds
      *                  to the array index values instead
+     *
+     * @see #movePiece(int, int, int, int)
      */
     public void movePiece(char initialFile, int initialRank, char finalFile, int finalRank) {
         // variables for index version of files and ranks
@@ -122,7 +149,7 @@ public class Board implements Constants  {
     }
 
     /**
-     * The actual movePiece function which takes the above converted index positions and alters the 2d array spaces[][].
+     * The actual movePiece function which takes converted index positions and alters the 2d array spaces[][].
      * @param initialRank Integer from 0-7 (outer array)
      * @param initialFile Integer from 0-7 (inner array)
      * @param finalRank Integer from 0-7 (outer array)
@@ -245,9 +272,9 @@ public class Board implements Constants  {
     }
 
     /**
-     *
+     * Consider whether a king is in check.
      * @param white colour in question of being in check.
-     * @return 0 if no piece is attacking the king; +1 for every piece attacking the king
+     * @return the number of pieces attacking the king.
      */
     public int inCheck(boolean white) {
         int rankOfKing = -1;
@@ -290,12 +317,8 @@ public class Board implements Constants  {
         return inCheck;
     }
 
-    public void startClient() {
-
-    }
-
     /**
-     * Return stockfish best move.
+     * Determine best move according to Stockfish engine.
      * @param fen the current FEN position.
      * @return String format of the best move. E.g., "e2e4"
      * @throws IOException
@@ -324,9 +347,9 @@ public class Board implements Constants  {
     }
 
     /**
-     * Given a size-2 String array (e.g. e2), return the corresponding this.getBoard() array coordinates. (e,2 == 6,4)
-     * @param bc
-     * @return
+     * Given a size-2 String array (e.g. e2), determine the corresponding array coordinates.
+     * @param bc the chess-notation coordinates
+     * @return the corresponding array coordinates for this.getBoard() (spaces[][]). (e,2 == 6,4)
      *
      * @see "root/design/chessBoard-indices.png"
      */
@@ -345,75 +368,60 @@ public class Board implements Constants  {
 
     // ========================
 
-    public void movePiece(String pattern) {
-        String[] arrPattern = pattern.split("");
-
-        try {
-            char fileOrigin = pattern.charAt(0);
-            char fileDestination = pattern.charAt(2);
-            int rankOrigin = Integer.parseInt(arrPattern[1]);
-            int rankDestination = Integer.parseInt(arrPattern[3]);
-
-            this.movePiece(fileOrigin, rankOrigin, fileDestination, rankDestination);
-        } catch (Exception e) {
-            System.out.println(e.toString());
-        }
-    }
-
-    private void printPieceColours() {
-        Board iBoard = this;
-
-        for (int rankCounter = 0; rankCounter < board.length; rankCounter++) {
-            for (int fileCounter = 0; fileCounter < board.length; fileCounter++) {
-                try {
-                    System.out.print(iBoard.board[rankCounter][fileCounter].getPiece().isWhite() ? "W" : "B");
-                } catch (Exception e) {
-                    System.out.print(" ");
-                }
-                System.out.print(" ");
-            }
-            System.out.println();
-        }
-    }
-
-    private void printBoardGrid() {
-        Board iBoard = this;
-
-        System.out.println("===============");
-
-        for (int rankCounter = 0; rankCounter < board.length; rankCounter++) {
-            for (int fileCounter = 0; fileCounter < board.length; fileCounter++) {
-                System.out.print(iBoard.board[rankCounter][fileCounter].getFileChar());
-                System.out.print(iBoard.board[rankCounter][fileCounter].getRankChar());
-                System.out.print(" ");
-            }
-            System.out.println();
-        }
-
-        System.out.println("===============");
-
-    }
-
-    public void printPiecesOnBoard() {
-        Board iBoard = this;
-
-        System.out.println("===============");
-
-        for (int rankCounter = 0; rankCounter < board.length; rankCounter++) {
-            for (int fileCounter = 0; fileCounter < board.length; fileCounter++) {
-                try {
-                    System.out.print(iBoard.board[rankCounter][fileCounter].getPiece().getFenSymbol());
-                } catch (Exception e) {
-                    System.out.print(" ");
-                }
-                System.out.print(" ");
-            }
-            System.out.println();
-        }
-
-        System.out.println("===============");
-
-    }
+//    private void printPieceColours() {
+//        Board iBoard = this;
+//
+//        for (int rankCounter = 0; rankCounter < board.length; rankCounter++) {
+//            for (int fileCounter = 0; fileCounter < board.length; fileCounter++) {
+//                try {
+//                    System.out.print(iBoard.board[rankCounter][fileCounter].getPiece().isWhite() ? "W" : "B");
+//                } catch (Exception e) {
+//                    System.out.print(" ");
+//                }
+//                System.out.print(" ");
+//            }
+//            System.out.println();
+//        }
+//    }
+//
+//    private void printBoardGrid() {
+//        Board iBoard = this;
+//
+//        System.out.println("===============");
+//
+//        for (int rankCounter = 0; rankCounter < board.length; rankCounter++) {
+//            for (int fileCounter = 0; fileCounter < board.length; fileCounter++) {
+//                System.out.print(iBoard.board[rankCounter][fileCounter].getFileChar());
+//                System.out.print(iBoard.board[rankCounter][fileCounter].getRankChar());
+//                System.out.print(" ");
+//            }
+//            System.out.println();
+//        }
+//
+//        System.out.println("===============");
+//
+//    }
+//
+//    public void printPiecesOnBoard() {
+//        Board iBoard = this;
+//
+//        System.out.println("===============");
+//
+//        for (int rankCounter = 0; rankCounter < board.length; rankCounter++) {
+//            for (int fileCounter = 0; fileCounter < board.length; fileCounter++) {
+//                try {
+//                    System.out.print(iBoard.board[rankCounter][fileCounter].getPiece().getFenSymbol());
+//                } catch (Exception e) {
+//                    System.out.print(" ");
+//                }
+//                System.out.print(" ");
+//            }
+//            System.out.println();
+//        }
+//
+//        System.out.println("===============");
+//
+//    }
 
     public Space[][] getBoard() {
         return this.board;
