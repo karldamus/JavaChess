@@ -1,9 +1,21 @@
 package game;
 
 import pieces.*;
+import stockfish.Client;
+
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
+import static java.util.function.UnaryOperator.identity;
 
 public class Board implements Constants  {
+    // All spaces on board
     private Space[][] board = new Space[RANKS][FILES];
+
+    // Game and FEN variables
     private static int halfmoveNumber = 0;
     private static int fullMoveNumber = 1;
     private boolean whiteToMove = true;
@@ -11,26 +23,40 @@ public class Board implements Constants  {
     private Movelist movelist = new Movelist();
     private Fen fenString;
 
+    // Game related variables
+    public boolean moved = false;
+    public boolean twoPlayer = false;
+
+    // AI
+    Client client = new Client();
+
+    // Default white pieces
     public static final Piece[] whitePieces = new Piece[] {
             new Rook(true), new Knight(true), new Bishop(true), new Queen(true), new King(true), new Bishop(true), new Knight(true), new Rook(true),
     };
 
+    // Default black pieces
     public static final Piece[] blackPieces = new Piece[] {
             new Rook(false), new Knight(false), new Bishop(false), new Queen(false), new King(false), new Bishop(false), new Knight(false), new Rook(false),
     };
 
+    /**
+     *
+     */
     public Board() {
+        // Start stockfish engine if pass n' play game (two players)
+        if (!twoPlayer)
+            client.start("stockfish");
+
         // add squares to spaces[][]
         for (int rank = 0; rank < RANKS; rank++) {
             for (int file = 0; file < FILES; file++) {
-
                 boolean isWhite = ((file % 2 == 0 && rank % 2 == 0) || (file % 2 != 0 && rank % 2 != 0));
                 this.board[rank][file] = new Space(isWhite, rank, fileArray[file]);
-
             }
         }
 
-        // add pieces to spaces[][]
+        // add pieces to spaces[][] in default start position
         for (int i = 0; i < blackPieces.length; i++) {
             this.board[0][i].setPiece(blackPieces[i]);
             this.board[1][i].setPiece(new Pawn(false));
@@ -40,7 +66,7 @@ public class Board implements Constants  {
             this.board[6][i].setPiece(new Pawn(true));
         }
 
-        // set fenString
+        // setup fenString
         fenString = new Fen(this, whiteToMove, halfmoveNumber, fullMoveNumber);
     }
 
@@ -107,6 +133,9 @@ public class Board implements Constants  {
         Piece finalPiece = null;
         Board tmpBoard = this;
 
+        boolean takeMove = false;
+
+        // initialize Piece variables (if possible)
         try {
             initialPiece = board[initialRank][initialFile].getPiece();
             finalPiece = board[finalRank][finalFile].getPiece();
@@ -134,13 +163,11 @@ public class Board implements Constants  {
             if (initialPiece.isSameColour(finalPiece)) {
                 System.out.println("You can't capture your own piece!");
                 return;
+            } else {
+                takeMove = true;
             }
         }
 
-        // check if pieces are in between (disregard knight)
-//        if (Character.toLowerCase(initialPiece.getFenSymbol()) != 'n') {
-//
-//        }
 
         // check if in check, then check if the move avoids check
 //        int inCheckCounter = this.inCheck(!initialPiece.isWhite());
@@ -165,6 +192,11 @@ public class Board implements Constants  {
             return;
         }
 
+        // individual piece updates
+        try {
+            board[initialRank][initialFile].getPiece().setHasMoved(true);
+        } catch (Exception e) { e.printStackTrace(); }
+
         // update moveList
         System.out.println("Updating movelist");
         movelist.updateMoveList(new Move(this, initialRank, initialFile, finalRank, finalFile, initialPiece, finalPiece != null));
@@ -174,11 +206,15 @@ public class Board implements Constants  {
         board[finalRank][finalFile].setPiece(initialPiece);
         board[initialRank][initialFile].clearPiece();
 
-        // update FEN
-        fenString = new Fen(this, whiteToMove, halfmoveNumber, fullMoveNumber);
+        // change turn
+        this.whiteToMove = !this.whiteToMove;
 
-        // individual piece updates
-        board[finalRank][finalFile].getPiece().setHasMoved(true);
+        // play move sound
+        try {
+            board[finalRank][finalFile].getPiece().playSound(takeMove);
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
 
         /**
          * halfmoveNumber and fullmoveNumber increment
@@ -199,10 +235,13 @@ public class Board implements Constants  {
         if (!whiteToMove)
             fullMoveNumber += 1;
 
-        this.printPiecesOnBoard();
+        // update FEN
+        fenString = new Fen(this, whiteToMove, halfmoveNumber, fullMoveNumber);
 
-        // change turn
-        this.whiteToMove = !this.whiteToMove;
+//        this.printPiecesOnBoard();
+
+        // move successful, set moved = true (useful for GUI ... see Game.java)
+        moved = true;
     }
 
     /**
@@ -251,23 +290,74 @@ public class Board implements Constants  {
         return inCheck;
     }
 
+    public void startClient() {
+
+    }
+
+    /**
+     * Return stockfish best move.
+     * @param fen the current FEN position.
+     * @return String format of the best move. E.g., "e2e4"
+     * @throws IOException
+     * @throws ExecutionException
+     * @throws InterruptedException
+     * @throws TimeoutException
+     *
+     * @see <a href="https://www.andreinc.net/2021/04/22/writing-a-universal-chess-interface-client-in-java">Andrei Ciobanu - Writing a Universal Chess Interface (UCI) Client in Java</a>
+     */
+    public String bestMove(String fen) throws IOException, ExecutionException, InterruptedException, TimeoutException {
+        // initialize engine
+        client.command("uci", identity(), (s) -> s.startsWith("uciok"), 4000l);
+
+        // set current position
+        client.command("position fen " + fen, identity(), s -> s.startsWith("readyok"), 4000l);
+
+        // find best move
+        String bestMove = client.command(
+                "go movetime 1000",
+                lines -> lines.stream().filter(s->s.startsWith("bestmove")).findFirst().get(),
+                line -> line.startsWith("bestmove"),
+                5000l)
+                .split(" ")[1];
+
+        return bestMove;
+    }
+
+    /**
+     * Given a size-2 String array (e.g. e2), return the corresponding this.getBoard() array coordinates. (e,2 == 6,4)
+     * @param bc
+     * @return
+     *
+     * @see "root/design/chessBoard-indices.png"
+     */
+    public int[] getArrayPositionFromBoardCoordinates(String[] bc) {
+        int[] boardCoordinates = new int[]{-1,-1};
+
+        boardCoordinates[0] = Integer.parseInt(bc[1]);
+
+        for (int i = 0; i < fileArrayStr.length; i++) {
+            if (bc[0].equals(fileArrayStr[i]))
+                boardCoordinates[1] = i;
+        }
+
+        return boardCoordinates;
+    }
+
     // ========================
 
-    public static void main(String[] args) {
-        Board board = new Board();
+    public void movePiece(String pattern) {
+        String[] arrPattern = pattern.split("");
 
-        board.printPiecesOnBoard();
+        try {
+            char fileOrigin = pattern.charAt(0);
+            char fileDestination = pattern.charAt(2);
+            int rankOrigin = Integer.parseInt(arrPattern[1]);
+            int rankDestination = Integer.parseInt(arrPattern[3]);
 
-        board.movePiece('e', 2, 'e', 4);
-        board.movePiece('d', 7, 'd', 5);
-        board.movePiece('f', 1, 'd', 3);
-        board.movePiece('d', 8, 'd', 6);
-        board.movePiece('d', 3, 'e', 2);
-        board.movePiece('d', 6, 'f', 5);
-
-//        board.movelist.printMoveList();
-        board.fenString.printFenString();
-
+            this.movePiece(fileOrigin, rankOrigin, fileDestination, rankDestination);
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
     }
 
     private void printPieceColours() {
@@ -304,7 +394,7 @@ public class Board implements Constants  {
 
     }
 
-    private void printPiecesOnBoard() {
+    public void printPiecesOnBoard() {
         Board iBoard = this;
 
         System.out.println("===============");
@@ -328,4 +418,8 @@ public class Board implements Constants  {
     public Space[][] getBoard() {
         return this.board;
     }
+
+    public Movelist getMovelist() { return this.movelist; }
+
+    public Fen getFen() { return this.fenString; }
 }
