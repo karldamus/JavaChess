@@ -8,3 +8,4 @@ Work in progress: see [Dev Notes](https://github.com/karldamus/JavaChess/blob/ma
 - [wikipedia/Forsyth_Edwards_Notation](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation)
 - [wikipedia/algebraic_notation_for_chess_moves](https://en.wikipedia.org/wiki/Algebraic_notation_(chess)#Notation_for_moves)
 - [Andreas Dolk on Stackoverflow - directional vectors for chess movement logic](https://stackoverflow.com/a/4305445/13280626)
+- [Best move using Stockfish chess engine by Andrei Ciobanu](https://www.andreinc.net/2021/04/22/writing-a-universal-chess-interface-client-in-java)
