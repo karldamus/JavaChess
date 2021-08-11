@@ -12,6 +12,12 @@ public class Space implements Constants {
 
     private JPanel spaceJPanel;
 
+    /**
+     * Create a new Space which is used within {@link Board#getBoard()}
+     * @param isWhite whether the square is white or black.
+     * @param rank the rank of the square.
+     * @param file the file of the square.
+     */
     public Space(boolean isWhite, int rank, char file) {
         setWhite(isWhite);
         setRank(rank);
@@ -20,6 +26,9 @@ public class Space implements Constants {
         setupJPanel();
     }
 
+    /**
+     * Create the JPanel for this Space.
+     */
     private void setupJPanel() {
         spaceJPanel = new JPanel();
         spaceJPanel.setSize(LABEL_SIZE);
@@ -30,12 +39,19 @@ public class Space implements Constants {
         spaceJPanel.setName(Character.toString(file) + Integer.toString(rank));
     }
 
+    /**
+     * Set this.piece and corresponding JLabel.
+     * @param piece the piece to add.
+     */
     public void setPiece(Piece piece) {
         this.piece = piece;
         if (piece != null)
             spaceJPanel.add(piece.getPieceJLabel());
     }
 
+    /**
+     * Remove any piece associated with this Space.
+     */
     public void clearPiece() {
         this.piece = null;
 //        spaceJPanel.remove(0);
