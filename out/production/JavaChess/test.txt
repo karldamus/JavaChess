@@ -1,0 +1,28 @@
+if (!twoPlayer) {
+            String bestMove = "";
+            try {
+                bestMove = this.bestMove(this.getFen().getFenString());
+            } catch (IOException | ExecutionException | InterruptedException | TimeoutException e) {
+                e.printStackTrace();
+            }
+
+            System.out.println("Fen: " + this.getFen().getFenString());
+            System.out.println("Best move: " + bestMove);
+            String[] bestMoveArr = bestMove.split("");
+            String[] bestMoveDestination = new String[] {bestMoveArr[2], bestMoveArr[3]};
+            int[] bestMoveDestinationCoordinates = this.getArrayPositionFromBoardCoordinates(bestMoveDestination);
+
+            this.moved = false;
+            this.movePiece(bestMove);
+            this.moved = false;
+
+            this.getBoard()[bestMoveDestinationCoordinates[0]][bestMoveDestinationCoordinates[1]].getSpaceJPanel().remove(0);
+            this.getBoard()[bestMoveDestinationCoordinates[0]][bestMoveDestinationCoordinates[1]].getSpaceJPanel().repaint();
+            this.getBoard()[bestMoveDestinationCoordinates[0]][bestMoveDestinationCoordinates[1]].getSpaceJPanel().revalidate();
+
+            // update gui
+            fenString.setText("<html>"+this.getFen().getFenString()+"</html>");
+
+            boardPanel.repaint();
+            boardPanel.revalidate();
+        }
