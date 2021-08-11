@@ -9,6 +9,10 @@ public class Fen implements Constants {
         this.fenString = generateFenString(board, whiteToMove, halfMoveNumber, fullMoveNumber);
     }
 
+    public String getFenString() {
+        return fenString;
+    }
+
     /**
      * Generate a String FEN notation from spaces[][]
      *
@@ -81,12 +85,17 @@ public class Fen implements Constants {
         // check squares: e8 king elif a8 & h8 rook ... see else statement
         fenString = castlingCheck(fenString, pieceAtA8, pieceAtE8, pieceAtH8, true);
 
+//        Piece[] blackPieces = new Piece[] {pieceAtA8, pieceAtE8, pieceAtH8};
+//        Piece[] whitePieces = new Piece[] {pieceAtA1, pieceAtE1, pieceAtH1};
+//
+//        fenString = castlingCheck(fenString, blackPieces, whitePieces);
+
         /**
          * Append en passant target square.
          *      if no en passant square is available, append "-"
          * {@see <a href="http://kirill-kryukov.com/chess/doc/fen.html">kirill-kryukov.com/chess/doc/fen.html</a>} 16.1.3.4
          */
-
+        fenString.append(" -"); // temp hard-code
 
         /**
          * Append halfMoveNumber and fullMoveNumber
@@ -101,6 +110,21 @@ public class Fen implements Constants {
         return fenString.toString();
     }
 
+    private StringBuilder castlingCheck(StringBuilder fenString, Piece[] blackPieces, Piece[] whitePieces) {
+//        if (blackPieces[1] == null && whitePieces[1] == null)
+//            return fenString.append("- ");
+//        if (blackPieces[1] != null && whitePieces[1] != null) {
+//            if (blackPieces[1].getFenSymbol() == 'k')
+//        }
+//
+        Piece blackKing = blackPieces[1];
+        if (blackKing != null && blackKing.getFenSymbol() == 'k' && !blackKing.hasMoved()) {
+
+        }
+
+        return fenString;
+    }
+
     /**
      * Helper method for {@link #generateFenString}. Checks to see if castling is available and appends
      *      the appropriate values to {@param fenString} which is promptly returned for continued alteration.
@@ -110,10 +134,15 @@ public class Fen implements Constants {
      * @param hFileRook the Piece in the h-file rook position
      * @param lowercase whether or not the second paramater for {@link #hasPieceMoved(Piece, char)}
      *                  should be lowercase or not. this is dependent on the colour of the piece
-     *                  we are looking for.
+     *                  we are looking for. true = black, false = white
      * @return modified StringBuilder from {@link #generateFenString}
      */
     private StringBuilder castlingCheck(StringBuilder fenString, Piece aFileRook, Piece king, Piece hFileRook, boolean lowercase) {
+        boolean whiteCastleKingside = true;
+        boolean whiteCastleQueenside = true;
+        boolean blackCastleKingside = true;
+        boolean blackCastleQueenside = true;
+
         if (hasPieceMoved(king, lowercase ? 'k' : 'K')) {
             fenString.append("- ");
         } else if (hasPieceMoved(aFileRook, lowercase ? 'r' : 'R') && hasPieceMoved(hFileRook, lowercase ? 'r' : 'R')) {
