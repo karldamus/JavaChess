@@ -1,7 +1,19 @@
-### August 11, 2021; 1:30am
+### August 11, 2021; 1:32am
 Relocate all png files from sprites to sprites/chess
 
-Added [Client]() class to handle
+Added [Client]() class to handle Stockfish engine bestmoves.
+
+Added placePiece sound.
+
+GUI mostly functional ([Game]() class):
+- Issue with AI taking pieces. Timeout issue or something.
+- Occasional AI movement causes other pieces to move?
+
+AI implemented (mostly):
+- Stockfish engine.
+- Best move generation.
+
+Added isLegalMove functionality to [Knight](https://github.com/karldamus/JavaChess/blob/main/src/pieces/Knight.java)
 
 ### August 5, 2021; 12:58am 
 Added isLegalMove functionality to the following classes:
