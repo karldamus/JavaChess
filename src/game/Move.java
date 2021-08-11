@@ -21,36 +21,40 @@ public class Move implements Constants {
         boolean pawn = Character.toLowerCase(pieceMoved.getFenSymbol()) == 'p';
         char fenSymbol = pieceMoved.getFenSymbol();
         int showFenSymbol = 0;
+        Piece tmpPiece = null;
 
-        // determine any disambiguating moves (more than one piece to same square)
+        // determine any disambiguating moves (more than one piece able to move to same square)
         for (int rank = 0; rank < RANKS; rank++) {
             for (int file = 0; file < FILES; file++) {
+                try {
+                    tmpPiece = board.getBoard()[rank][file].getPiece();
+                } catch (Exception e) { }
 
-                // if piece at board position [rank][file] is not null
-                if (board.getBoard()[rank][file].getPiece() != null) {
-                    // set up tmpPiece and check for matching fen symbols, then check if isLegalMove
-                    Piece tmpPiece = board.getBoard()[rank][file].getPiece();
-                    if (tmpPiece.getFenSymbol() == fenSymbol && tmpPiece.isLegalMove(board, initialRank, initialFile, finalRank, finalFile))
+                if ((tmpPiece != null) && (initialRank != rank && initialFile != file) && (tmpPiece.getFenSymbol() == fenSymbol)) {
+                    if (tmpPiece.isLegalMove(board, rank, file, finalRank, finalFile)) {
                         showFenSymbol += 1; // if above 1, then more than one piece can move. -- see below
-                }
+//                        System.out.println(fenSymbol);
+                    }
 
+                }
             }
         }
 
+
         // TEMPORARY HARD-CODE (until isLegalMove() is working in all Piece sub-classes)
-        showFenSymbol = 0;
+//        showFenSymbol = 0;
 
         if (showFenSymbol > 1) {
             if (pawn) {
                 moveString = pieceOrigination + (captureMove ? "x" : "") + finalFile_char + finalRank_char;
             } else {
-                moveString = Character.toUpperCase(fenSymbol) + pieceOrigination + (captureMove ? "x" : "") + finalFile_char + finalRank_char;
+                moveString = fenSymbol + pieceOrigination + (captureMove ? "x" : "") + finalFile_char + finalRank_char;
             }
         } else {
             if (pawn)
                 moveString = (captureMove ? "x" : "") + finalFile_char + finalRank_char;
             else
-                moveString = Character.toUpperCase(fenSymbol) + (captureMove ? "x" : "") + finalFile_char + finalRank_char;
+                moveString = fenSymbol + (captureMove ? "x" : "") + finalFile_char + finalRank_char;
         }
     }
 
