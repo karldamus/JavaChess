@@ -10,6 +10,14 @@ public class Knight extends Piece {
 
     @Override
     public boolean isLegalMove(Board board, int initialRank, int initialFile, int finalRank, int finalFile) {
-        return true;
+        int absRank = Math.abs(finalRank - initialRank);
+        int absFile = Math.abs(finalFile - initialFile);
+
+        if (absRank == 2 && absFile == 1)
+            return true;
+        if (absRank == 1 && absFile == 2)
+            return true;
+
+        return false;
     }
 }

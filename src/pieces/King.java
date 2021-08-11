@@ -14,15 +14,16 @@ public class King extends Piece {
         Space[][] spaces = board.getBoard();
         Board tmpBoard = board;
         Piece tmpPiece = board.getBoard()[initialRank][initialFile].getPiece();
+        tmpPiece.setPieceJLabel(board.getBoard()[initialRank][initialFile].getPiece().getPieceJLabel());
 
         int absRank = Math.abs(finalRank - initialRank);
         int absFile = Math.abs(finalFile - initialFile);
 
         // check if movement distance is greater than one square
-//        if ((absRank > 1) || (absFile > 1)) {
-//            System.out.println("The King can only move a distance of 1.");
-//            return false;
-//        }
+        if ((absRank > 1) || (absFile > 1)) {
+            System.out.println("The King can only move a distance of 1.");
+            return false;
+        }
 
         // setup tmp board
         tmpBoard.getBoard()[initialRank][initialFile].setPiece(null);
