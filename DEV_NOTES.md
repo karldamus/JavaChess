@@ -1,3 +1,8 @@
+### August 11, 2021; 1:30am
+Relocate all png files from sprites to sprites/chess
+
+Added [Client]() class to handle
+
 ### August 5, 2021; 12:58am 
 Added isLegalMove functionality to the following classes:
 - [Bishop](https://github.com/karldamus/JavaChess/blob/main/src/pieces/Bishop.java)
