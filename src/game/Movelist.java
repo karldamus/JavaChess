@@ -32,7 +32,7 @@ public class Movelist implements Constants {
             }
         }
 
-        movelist[lastIndexAvailable] = move;
+        this.movelist[lastIndexAvailable] = move;
 
         // update moveNumber if black moved
         if (!move.getPieceMoved().isWhite())
@@ -46,8 +46,13 @@ public class Movelist implements Constants {
     public void printMoveList() {
         int moveNumber = 1;
         for (int i = 0; i < movelist.length; i += 2) {
-            if (movelist[i] != null) {
+            if (movelist[i+1] != null) {
                 System.out.format("%1s%1s%6s", (moveNumber + ". "), movelist[i].toString(), movelist[i+1].toString());
+                System.out.println();
+                moveNumber += 1;
+            }
+            else if (movelist[i] != null) {
+                System.out.format("%1s%1s", (moveNumber + ". "), movelist[i].toString());
                 System.out.println();
                 moveNumber += 1;
             }
