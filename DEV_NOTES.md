@@ -1,11 +1,23 @@
+### August 15, 2021; 7:55pm
+`These updates have been in progress this past week.`
+
+Menus Branch:
+- [Game](https://github.com/karldamus/JavaChess/blob/main/src/Game.java):
+  - Added a menubar.
+  - Added a login window.
+  - Added new game (w/ saveGame check) functionality.
+- Created [Settings]() class.
+- Created [User]() class.
+- Created users.txt (hidden)
+
 ### August 11, 2021; 1:32am
-Relocate all png files from sprites to sprites/chess
+Relocate all png files from sprites to sprites/chess.
 
 Added [Client]() class to handle Stockfish engine bestmoves.
 
 Added placePiece sound.
 
-GUI mostly functional ([Game]() class):
+GUI mostly functional ([Game](https://github.com/karldamus/JavaChess/blob/main/src/Game.java) class):
 - Issue with AI taking pieces. Timeout issue or something.
 - Occasional AI movement causes other pieces to move?
 
