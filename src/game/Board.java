@@ -26,6 +26,7 @@ public class Board implements Constants  {
     // Game related variables
     public boolean moved = false;
     public boolean twoPlayer = false;
+    public boolean gameInProgress;
 
     // AI
     Client client = new Client();
@@ -47,7 +48,9 @@ public class Board implements Constants  {
      * @see Space
      */
     public Board() {
-        // Start stockfish engine if pass n' play game (two players)
+        gameInProgress = false;
+
+        // Start stockfish engine if not pass n' play game (two players)
         if (!twoPlayer)
             client.start("stockfish");
 
@@ -269,6 +272,8 @@ public class Board implements Constants  {
 
         // move successful, set moved = true (useful for GUI ... see Game.java)
         moved = true;
+
+        gameInProgress = true;
     }
 
     /**
