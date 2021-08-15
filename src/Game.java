@@ -1,13 +1,15 @@
 import game.Board;
 import game.Constants;
-import game.Space;
-import pieces.Piece;
 //import stockfish.Stockfish;
-import stockfish.Client;
+import users.User;
 
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -16,15 +18,31 @@ import java.util.concurrent.TimeoutException;
 
 public class Game extends JLayeredPane implements Constants {
 
+    // gui
     private JFrame gameJFrame;
     private JPanel boardPanel;
     private Board board;
-    private int stockfishLevel = 3000; // difficulty -- wait time in milliseconds (1000 - 10000)
-
-    private boolean twoPlayer = false;
-
     JPanel fenStringContainer;
     JTextPane fenString;
+    JPanel leftMenuBar;
+
+    JMenuBar menuBar;
+    JMenu menu, submenu;
+    JMenuItem menuItem;
+    JRadioButtonMenuItem rbMenuItem;
+    JCheckBoxMenuItem cbMenuItem;
+
+    JOptionPane popup;
+    JFrame loginWindow;
+
+    // game data
+    private int stockfishLevel = 3000; // difficulty -- wait time in milliseconds (1000 - 10000)
+
+    // user data
+    private boolean loggedIn;
+    private User user;
+    String tmpUsername;
+    char[] tmpPassword;
 
     /**
      *
@@ -32,12 +50,210 @@ public class Game extends JLayeredPane implements Constants {
     public Game() {
         board = new Board();
 
+        setUpUser();
+        setUpSettings();
         setUpGui();
+        setUpMenuBar();
+    }
+
+    /**
+     * Start the program.
+     */
+    public static void main(String[] args) {
+        Game game = new Game();
     }
 
     public void update() {
 
     }
+
+    // ================
+    //     USERS
+    // ================
+
+    public void setUpUser() {
+//        this.loggedIn = false;
+//        user = null;
+    }
+
+    public void login() {
+        if (tmpUsername.equals("") || tmpPassword.length == 0) {
+            System.out.println("Username or password not filled out.");
+            displayLoginWindow();
+        } else {
+            System.out.println("Login...");
+            System.out.println("Username: " + tmpUsername);
+            System.out.println("Password: " + tmpPassword);
+            this.loggedIn = true;
+            setUpMenuBar();
+        }
+    }
+
+    public void displayLoginWindow() {
+        // create panels
+        loginWindow = new JFrame("Login");
+        JPanel loginPanel = new JPanel(new GridLayout(2,1));
+        JPanel fieldsPanel = new JPanel(new GridLayout(2,1));
+        JPanel usernamePanel = new JPanel();
+        JPanel passwordPanel = new JPanel();
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        // create components
+        JLabel usernameMsg = new JLabel("Username:");
+        JLabel passwordMsg = new JLabel("Password:");
+        JTextField username = new JTextField();
+        JPasswordField password = new JPasswordField();
+        JButton loginBtn = new JButton("Login");
+        JButton cancelBtn = new JButton("Cancel");
+
+        // add event listeners
+        loginBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tmpUsername = username.getText();
+                tmpPassword = password.getPassword();
+                loginWindow.dispose();
+                login();
+            }
+        });
+
+        cancelBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loginWindow.dispose();
+            }
+        });
+
+        // sizing
+        loginWindow.setSize(BOARD_SIZE);
+        loginPanel.setSize(BOARD_SIZE);
+        username.setColumns(20);
+        password.setColumns(20);
+
+        // colouring
+        loginBtn.setBackground(Color.decode("#FF5733"));
+        loginBtn.setOpaque(true);
+        loginBtn.setBorderPainted(false);
+        cancelBtn.setBackground(Color.decode("#C2C2C2"));
+        cancelBtn.setOpaque(true);
+        cancelBtn.setBorderPainted(false);
+
+
+        // add components
+        usernamePanel.add(usernameMsg);
+        usernamePanel.add(username);
+        passwordPanel.add(passwordMsg);
+        passwordPanel.add(password);
+        buttonsPanel.add(loginBtn);
+        buttonsPanel.add(cancelBtn);
+
+        // add panels
+        fieldsPanel.add(usernamePanel);
+        fieldsPanel.add(passwordPanel);
+        loginPanel.add(fieldsPanel);
+        loginPanel.add(buttonsPanel);
+        loginPanel.repaint();
+        loginWindow.add(loginPanel);
+
+        // visibility
+        loginWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        loginWindow.setLocationRelativeTo(null);
+        loginWindow.pack();
+        loginWindow.setVisible(true);
+    }
+
+    public void logout() {
+        if (this.loggedIn) {
+            this.loggedIn = false;
+            user = null;
+        }
+    }
+
+    public void register() {
+
+    }
+
+    // ================
+    //     IN-GAME
+    // ================
+
+    public void newGame(boolean twoPlayer) {
+        if (board.gameInProgress) {
+            int confirmNewGame = warningPopup("Starting a new game will forfeit this current game. Do you forfeit?",
+                    new Object[]{"Forfeit game", "Continue playing"});
+
+            if (confirmNewGame == JOptionPane.YES_OPTION)
+                System.out.println("Forfeit");
+            if (confirmNewGame == JOptionPane.NO_OPTION)
+                return;
+        }
+
+        if (this.loggedIn) {
+            int saveGame = confirmationPopup("Would you like to save your current game?");
+
+            if (saveGame == JOptionPane.YES_OPTION)
+                saveGame();
+            if (saveGame == JOptionPane.CANCEL_OPTION)
+                return;
+        } else {
+            int register = confirmationPopup("Would you like to login or register to save your current game?");
+
+            // todo: BUG FIX - checks this.loggedIn before user gets chance to login
+            if (register == JOptionPane.YES_OPTION) {
+                displayLoginWindow();
+                // if successfully registered and/or logged in, repeat newGame()
+                if (this.loggedIn)
+                    newGame(twoPlayer);
+            }
+            if (register == JOptionPane.CANCEL_OPTION)
+                return;
+        }
+
+        board = new Board();
+        board.twoPlayer = twoPlayer;
+        gameJFrame.setVisible(false);
+        setUpGui();
+        setUpMenuBar();
+    }
+
+    public void saveGame() {
+        System.out.println("Saving game");
+    }
+
+    public void setUpSettings() {
+        if (this.loggedIn) {
+            // apply settings from user
+
+        } else {
+            setUpDefaultSettings();
+        }
+    }
+
+    public void setUpDefaultSettings() {
+
+    }
+
+    // ================
+    //     POP-UPS
+    // ================
+
+    public int confirmationPopup(String message) {
+        return JOptionPane.showConfirmDialog(gameJFrame, message);
+    }
+
+    public int warningPopup(String message, Object[] options) {
+        return JOptionPane.showOptionDialog(gameJFrame,
+                message, "Warning",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE,
+                null,
+                options, options[1]);
+    }
+
+
+    // ================
+    //       GUI
+    // ================
 
     /**
      * Create Game window with all elements:
@@ -49,6 +265,7 @@ public class Game extends JLayeredPane implements Constants {
         // setup JFrame
         gameJFrame = new JFrame(GAME_TITLE);
         gameJFrame.setMinimumSize(BOARD_SIZE);
+        gameJFrame.setMaximumSize(BOARD_SIZE);
 
         // setup board JPanel
         boardPanel = new JPanel(BOARD_GRID_LAYOUT);
@@ -89,6 +306,57 @@ public class Game extends JLayeredPane implements Constants {
         gameJFrame.repaint();
     }
 
+    public void setUpMenuBar() {
+        String play = "Play";
+        String theme = "Theme";
+        String account = "Account";
+        String settings = "Settings";
+
+        menuBar = new JMenuBar();
+
+        // play
+        menu = new JMenu(play);
+        menuItem = new JMenuItem(new AbstractAction("Computer") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                newGame(false);
+            }
+        });
+        menu.add(menuItem);
+        menuItem = new JMenuItem(new AbstractAction("Pass n Play") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                newGame(true);
+            }
+        });
+        menu.add(menuItem);
+        menuBar.add(menu);
+
+        // theme
+        menu = new JMenu(theme);
+        menuBar.add(menu);
+
+        // account
+        menu = new JMenu(account);
+        menuItem = new JMenuItem(new AbstractAction(loggedIn ? "Logout" : "Login") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayLoginWindow();
+            }
+        });
+        menu.add(menuItem);
+        menuBar.add(menu);
+
+        menu = new JMenu(settings);
+        menuBar.add(menu);
+
+        // add menuBar to JFrame
+        gameJFrame.setJMenuBar(menuBar);
+
+        gameJFrame.setVisible(false);
+        gameJFrame.setVisible(true);
+        gameJFrame.repaint();
+    }
 
     /**
      * MouseAdapter class allows movement on gui, valid moves are still determined via Board class.
@@ -221,8 +489,12 @@ public class Game extends JLayeredPane implements Constants {
         }
     }
 
+    // ================
+    //       AI
+    // ================
+
     public void aiMove() {
-        if (!twoPlayer) {
+        if (!board.twoPlayer) {
             String bestMove = "";
             try {
                 bestMove = board.bestMove(board.getFen().getFenString());
@@ -262,6 +534,10 @@ public class Game extends JLayeredPane implements Constants {
         }
     }
 
+    // ================
+    //     HELPERS
+    // ================
+
     public int getFileIndex(String file) {
         System.out.println("File " + file + " is: " + file.getClass());
         String[] fileArray = new String[] {"a", "b", "c", "d", "e", "f", "g", "h"};
@@ -284,12 +560,21 @@ public class Game extends JLayeredPane implements Constants {
         boardPanel.revalidate();
     }
 
-
-
-    public static void main(String[] args) {
-        Game game = new Game();
-        game.board.getFen().printFenString();
-
+    private void repaintGui() {
+        for (int rank = 0; rank < RANKS; rank++) {
+            for (int file = 0; file < FILES; file++) {
+                board.getBoard()[rank][file].getSpaceJPanel().repaint();
+                board.getBoard()[rank][file].getSpaceJPanel().revalidate();
+            }
+        }
+        boardPanel.repaint();
+        boardPanel.revalidate();
+        gameJFrame.pack();
+        gameJFrame.setLocationRelativeTo(null);
+        gameJFrame.setVisible(false);
+        gameJFrame.setVisible(true);
+        gameJFrame.revalidate();
+        gameJFrame.repaint();
     }
 
 
