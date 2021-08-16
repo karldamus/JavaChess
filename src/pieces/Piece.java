@@ -17,7 +17,8 @@ public abstract class Piece implements Constants {
     private ImageIcon pieceImageIcon;
     private JLabel pieceJLabel;
 
-    private String movePieceSound = "src/sounds/placePiece.wav";
+    private String movePieceSound = "src/sounds/move.wav";
+    private String capturePieceSound = "src/sounds/capture.wav";
 
     /**
      * Base Piece constructor.
@@ -92,13 +93,13 @@ public abstract class Piece implements Constants {
 
     /**
      * Play the pieces sound.
-     * @param takeMove Determine whether to play the 'takeMove' sound or the regular sound.
+     * @param captureMove Determine whether to play the 'captureMove' sound or the regular sound.
      * @throws UnsupportedAudioFileException
      * @throws IOException
      * @throws LineUnavailableException
      */
-    public void playSound(boolean takeMove) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(movePieceSound).getAbsoluteFile());
+    public void playSound(boolean captureMove) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(captureMove ? capturePieceSound : movePieceSound).getAbsoluteFile());
         Clip clip = AudioSystem.getClip();
         clip.open(audioInputStream);
         clip.start();
