@@ -32,7 +32,8 @@ public class Space implements Constants {
     private void setupJPanel() {
         spaceJPanel = new JPanel();
         spaceJPanel.setSize(LABEL_SIZE);
-        spaceJPanel.setMaximumSize(LABEL_SIZE);
+//        spaceJPanel.setPreferredSize(LABEL_SIZE);
+//        spaceJPanel.setMaximumSize(LABEL_SIZE);
         spaceJPanel.setMinimumSize(LABEL_SIZE);
 
         spaceJPanel.setBackground(isWhite() ? WHITE_COLOR : BLACK_COLOR);
@@ -54,7 +55,9 @@ public class Space implements Constants {
      */
     public void clearPiece() {
         this.piece = null;
-//        spaceJPanel.remove(0);
+        try {
+            spaceJPanel.remove(0);
+        } catch(Exception e) { }
     }
 
     // get____Index methods are used for array purposes
