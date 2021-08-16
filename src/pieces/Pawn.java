@@ -45,9 +45,6 @@ public class Pawn extends Piece {
         int absRank = Math.abs(finalRank - initialRank);
         int absFile = Math.abs(finalFile - initialFile);
 
-        System.out.println("absRank: " + absRank);
-        System.out.println("absFile: " + absFile);
-
         Piece tmpFinalPiece = null;
 
         try {
