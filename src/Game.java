@@ -177,6 +177,11 @@ public class Game extends JLayeredPane implements Constants {
     //     IN-GAME
     // ================
 
+    /**
+     * Start a new game.
+     * @param twoPlayer whether to play against computer or not.
+     * @see Board#twoPlayer
+     */
     public void newGame(boolean twoPlayer) {
         if (board.gameInProgress) {
             int confirmNewGame = warningPopup("Starting a new game will forfeit this current game. Do you forfeit?",
@@ -256,10 +261,7 @@ public class Game extends JLayeredPane implements Constants {
     // ================
 
     /**
-     * Create Game window with all elements:
-     * <li>Board</li>
-     * <li>Menus</li>
-     * <li>Icons</li>
+     * Create Game window.
      */
     public void setUpGui() {
         // setup JFrame
@@ -306,6 +308,9 @@ public class Game extends JLayeredPane implements Constants {
         gameJFrame.repaint();
     }
 
+    /**
+     * Set up in-game menu bar.
+     */
     public void setUpMenuBar() {
         String play = "Play";
         String theme = "Theme";
@@ -486,7 +491,8 @@ public class Game extends JLayeredPane implements Constants {
             repaint();
             dragLabel = null;
 
-            if (board.moved) {
+            // ai move!
+            if (board.moved && !board.twoPlayer) {
                 aiMove();
                 board.moved = false;
             }
@@ -498,102 +504,25 @@ public class Game extends JLayeredPane implements Constants {
     // ================
 
     public void aiMove() {
-        if (!board.twoPlayer) {
-            // find best move
-            String bestMove = "";
-            try {
-                bestMove = board.bestMove(board.getFen().getFenString());
-            } catch (Exception e) {
-                System.out.println("Exception in aiMove method. Cannot find best move with given FEN string.");
-                e.printStackTrace();
-            }
 
-//            String[] bestMoveArr = bestMove.split("");
-//            String bestMoveOrigin = bestMoveArr[0] + bestMoveArr[1];
-//            String bestMoveDestination = bestMoveArr[2] + bestMoveArr[3];
-
-//            int[] bestMoveOriginBoardCoords = getBoardCoordsFromChessCoords(bestMoveOrigin);
-//            int[] bestMoveDestinationBoardCoords = getBoardCoordsFromChessCoords(bestMoveDestination);
-
-            System.out.println("Best move: " + bestMove);
-            board.movePiece(bestMove);
-
-//            if (board.moved) {
-//                // move ok, update on gui
-//                Component[] originComponents = board.getBoard()[bestMoveOriginBoardCoords[0]][bestMoveOriginBoardCoords[1]].getSpaceJPanel().getComponents();
-//                board.getBoard()[bestMoveDestinationBoardCoords[0]][bestMoveDestinationBoardCoords[1]].getSpaceJPanel().remove(0);
-//                board.getBoard()[bestMoveDestinationBoardCoords[0]][bestMoveDestinationBoardCoords[1]].getSpaceJPanel().add(originComponents[0]);
-////                board.getBoard()
-//
-//                board.moved = false;
-//            }
-            if (board.moved) {
-                revalidateAllSquarePanels();
-            }
-        }
-    }
-
-    public int[] getBoardCoordsFromChessCoords(String chessCoordsStr) {
-        int[] returnBoardCoords = new int[2];
-        loop_through_chessCoords:
-        for (int rank = 0; rank < chessCoords.length; rank++) {
-            for (int file = 0; file < chessCoords.length; file++) {
-                if (chessCoords[rank][file].equals(chessCoordsStr)) {
-                    returnBoardCoords[0] = rank;
-                    returnBoardCoords[1] = file;
-                    break loop_through_chessCoords;
-                }
-            }
+        // find best move
+        String bestMove = "";
+        try {
+            bestMove = board.bestMove(board.getFen().getFenString());
+        } catch (Exception e) {
+            System.out.println("Exception in aiMove method. Cannot find best move with given FEN string.");
+            e.printStackTrace();
         }
 
-        return returnBoardCoords;
-    }
+        // move piece on backend
+        board.movePiece(bestMove);
 
-//    public void aiMove() {
-//        if (!board.twoPlayer) {
-//            String bestMove = "";
-//            try {
-//                bestMove = board.bestMove(board.getFen().getFenString());
-//            } catch (IOException | ExecutionException | InterruptedException | TimeoutException e) {
-//                e.printStackTrace();
-//            }
-//
-//            System.out.println("Fen: " + board.getFen().getFenString());
-//            System.out.println("Best move: " + bestMove);
-//            String[] bestMoveArr = bestMove.split("");
-//
-//            String[] bestMoveOrigin = new String[] { bestMoveArr[0], bestMoveArr[1]};
-//            String[] bestMoveDestination = new String[] {bestMoveArr[2], bestMoveArr[3]};
-//            int[] bestMoveOriginCoordinates = board.getArrayPositionFromBoardCoordinates(bestMoveOrigin);
-//            int[] bestMoveDestinationCoordinates = board.getArrayPositionFromBoardCoordinates(bestMoveDestination);
-//
-//            try {
-//                Component[] originComponents = board.getBoard()[bestMoveOriginCoordinates[0]][bestMoveOriginCoordinates[1]].getSpaceJPanel().getComponents();
-//                // (VISUAL) remove any piece at destination and add origin piece
-//                board.getBoard()[bestMoveDestinationCoordinates[0]][bestMoveDestinationCoordinates[1]].getSpaceJPanel().remove(0);
-//                board.getBoard()[bestMoveDestinationCoordinates[0]][bestMoveDestinationCoordinates[1]].getSpaceJPanel().add(originComponents[0]);
-//            } catch (Exception e) {
-//                System.out.println("Trying to move piece from: " + bestMoveOriginCoordinates[0] + bestMoveOriginCoordinates[1]);
-//            }
-//
-//
-//            board.getBoard()[bestMoveDestinationCoordinates[0]][bestMoveDestinationCoordinates[1]].getSpaceJPanel().repaint();
-//            board.getBoard()[bestMoveDestinationCoordinates[0]][bestMoveDestinationCoordinates[1]].getSpaceJPanel().revalidate();
-//
-//            board.moved = false;
-//            board.movePiece(bestMove);
-//            board.moved = false;
-//
-////            board.getBoard()[bestMoveDestinationCoordinates[0]][bestMoveDestinationCoordinates[1]].getSpaceJPanel().repaint();
-////            board.getBoard()[bestMoveDestinationCoordinates[0]][bestMoveDestinationCoordinates[1]].getSpaceJPanel().revalidate();
-//
-//            // update gui
-//            fenString.setText("<html>"+board.getFen().getFenString()+"</html>");
-//
-//            boardPanel.repaint();
-//            boardPanel.revalidate();
-//        }
-//    }
+        if (board.moved) {
+            revalidateAllSquarePanels();
+            board.moved = false;
+        }
+
+    }
 
     // ================
     //     HELPERS
@@ -609,15 +538,6 @@ public class Game extends JLayeredPane implements Constants {
         }
 
         return -1;
-    }
-
-    private void revalidateSquarePanels(int x_origin, int x_destination, int y_origin, int y_destination) {
-        board.getBoard()[x_origin][y_origin].getSpaceJPanel().revalidate();
-        board.getBoard()[x_origin][y_origin].getSpaceJPanel().repaint();
-        board.getBoard()[x_destination][y_destination].getSpaceJPanel().revalidate();
-        board.getBoard()[x_destination][y_destination].getSpaceJPanel().repaint();
-        boardPanel.repaint();
-        boardPanel.revalidate();
     }
 
     private void revalidateAllSquarePanels() {
