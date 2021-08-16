@@ -228,7 +228,6 @@ public class Board implements Constants  {
         } catch (Exception e) { e.printStackTrace(); }
 
         // update moveList
-        System.out.println("Updating movelist");
         movelist.updateMoveList(new Move(this, initialRank, initialFile, finalRank, finalFile, initialPiece, finalPiece != null));
 
         // all ok, move piece
