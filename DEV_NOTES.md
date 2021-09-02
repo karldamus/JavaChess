@@ -1,3 +1,12 @@
+### September 1, 2021; 10:18pm 
+It's been a while since my last commit. Took a break from this personal project to focus on life and work. Anyways, I'm back haha.
+
+- [Game](https://github.com/karldamus/JavaChess/blob/main/src/Game.java) now has working registration and successfully adds users to a users.txt file.
+- [ColourScheme](https://github.com/karldamus/JavaChess/blob/main/src/users/ColourScheme.java) is a work in progress, but it will be used to hold the different types of colour schemes applicable to the chess board.
+- [SchemePresets](https://github.com/karldamus/JavaChess/blob/main/src/users/SchemePresets.java) is a simple enum to hold the different types of colour scheme presets.
+- [Settings](https://github.com/karldamus/JavaChess/blob/main/src/users/Settings.java): simple updates to this class, work in progress.
+- [User](https://github.com/karldamus/JavaChess/blob/main/src/users/User.java): added getter.
+
 ### August 15, 2021; 10:20pm
 [Game](https://github.com/karldamus/JavaChess/blob/main/src/Game.java) now has a working Stockfish engine implementation. 
 
