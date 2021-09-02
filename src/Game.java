@@ -1,6 +1,7 @@
 import game.Board;
 import game.Constants;
 //import stockfish.Stockfish;
+import users.Settings;
 import users.User;
 
 
@@ -12,7 +13,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
+import java.io.*;
+import java.nio.Buffer;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -33,10 +35,13 @@ public class Game extends JLayeredPane implements Constants {
     JCheckBoxMenuItem cbMenuItem;
 
     JOptionPane popup;
-    JFrame loginWindow;
+//    JFrame loginWindow;
+//    JFrame registerWindow;
+    JFrame authenticationWindow;
 
     // game data
     private int stockfishLevel = 3000; // difficulty -- wait time in milliseconds (1000 - 10000)
+    private Settings settings; // default if no user
 
     // user data
     private boolean loggedIn;
@@ -76,23 +81,84 @@ public class Game extends JLayeredPane implements Constants {
 //        user = null;
     }
 
-    public void login() {
-        if (tmpUsername.equals("") || tmpPassword.length == 0) {
-            System.out.println("Username or password not filled out.");
-            displayLoginWindow();
-        } else {
-            System.out.println("Login...");
-            System.out.println("Username: " + tmpUsername);
-            System.out.println("Password: " + tmpPassword);
-            this.loggedIn = true;
-            setUpMenuBar();
+    // backend login
+    public void login(String username, char[] password) {
+//        if (tmpUsername.equals("") || tmpPassword.length == 0) {
+//            System.out.println("Username or password not filled out.");
+//            displayAuthenticationWindow(true);
+//        } else {
+//            // check for user info in database
+//            System.out.println("Login...");
+//            System.out.println("Username: " + tmpUsername);
+//            System.out.println("Password: " + tmpPassword);
+//            this.loggedIn = true;
+//            setUpSettings();
+//            setUpMenuBar();
+//        }
+
+    }
+
+    // backend logout
+    public void logout() {
+        if (this.loggedIn) {
+            this.loggedIn = false;
+            user = null;
         }
     }
 
-    public void displayLoginWindow() {
+    // backend registration
+    public void register(String username, char[] password) {
+        try {
+            File usersDatabase = new File("src/users","users.txt");
+            usersDatabase.createNewFile();
+
+            // check if user already exists
+            BufferedReader br = new BufferedReader(new FileReader(usersDatabase));
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.contains("username:")) {
+                    String tmpUsername = line.split(":")[1];
+                    if (username.equals(tmpUsername)) {
+                        System.out.println("That username is taken");
+                        return;
+                    }
+                }
+            }
+
+            // add user
+            try(FileWriter fw = new FileWriter(usersDatabase, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+                PrintWriter out = new PrintWriter(bw))
+            {
+                out.println("USER {");
+                out.println("username:" + username);
+                out.println("password:" + new String(password));
+                out.println("}");
+
+                // successful registration, display login window
+                displayAuthenticationWindow(true);
+
+            } catch (IOException e) {
+                System.out.println("Failed to add a new user to the database.");
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            System.out.println("An error occurred with registration.");
+            e.printStackTrace();
+        }
+    }
+
+    // visual login and registration
+    public void displayAuthenticationWindow(boolean login) {
+        // dispose of any current authentication window
+        try {
+            authenticationWindow.dispose();
+        } catch (Exception e) { }
+
+        authenticationWindow = new JFrame(login ? "Login" : "Register");
+
         // create panels
-        loginWindow = new JFrame("Login");
-        JPanel loginPanel = new JPanel(new GridLayout(2,1));
+        JPanel mainPanel = new JPanel(new GridLayout(2,1));
         JPanel fieldsPanel = new JPanel(new GridLayout(2,1));
         JPanel usernamePanel = new JPanel();
         JPanel passwordPanel = new JPanel();
@@ -103,37 +169,42 @@ public class Game extends JLayeredPane implements Constants {
         JLabel passwordMsg = new JLabel("Password:");
         JTextField username = new JTextField();
         JPasswordField password = new JPasswordField();
-        JButton loginBtn = new JButton("Login");
+        JButton confirmBtn = new JButton(login ? "Login" : "Register");
         JButton cancelBtn = new JButton("Cancel");
 
         // add event listeners
-        loginBtn.addActionListener(new ActionListener() {
+        confirmBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 tmpUsername = username.getText();
                 tmpPassword = password.getPassword();
-                loginWindow.dispose();
-                login();
+                // todo: dispose of authenticationWindow after successful login
+//                authenticationWindow.dispose();
+                // todo: add arguments to login() and register()
+                if (login)
+                    login(tmpUsername, tmpPassword);
+                else
+                    register(tmpUsername, tmpPassword);
             }
         });
 
         cancelBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                loginWindow.dispose();
+                authenticationWindow.dispose();
             }
         });
 
         // sizing
-        loginWindow.setSize(BOARD_SIZE);
-        loginPanel.setSize(BOARD_SIZE);
+        authenticationWindow.setSize(BOARD_SIZE);
+        mainPanel.setSize(BOARD_SIZE);
         username.setColumns(20);
         password.setColumns(20);
 
         // colouring
-        loginBtn.setBackground(Color.decode("#FF5733"));
-        loginBtn.setOpaque(true);
-        loginBtn.setBorderPainted(false);
+        confirmBtn.setBackground(Color.decode("#FF5733"));
+        confirmBtn.setOpaque(true);
+        confirmBtn.setBorderPainted(false);
         cancelBtn.setBackground(Color.decode("#C2C2C2"));
         cancelBtn.setOpaque(true);
         cancelBtn.setBorderPainted(false);
@@ -144,33 +215,22 @@ public class Game extends JLayeredPane implements Constants {
         usernamePanel.add(username);
         passwordPanel.add(passwordMsg);
         passwordPanel.add(password);
-        buttonsPanel.add(loginBtn);
+        buttonsPanel.add(confirmBtn);
         buttonsPanel.add(cancelBtn);
 
         // add panels
         fieldsPanel.add(usernamePanel);
         fieldsPanel.add(passwordPanel);
-        loginPanel.add(fieldsPanel);
-        loginPanel.add(buttonsPanel);
-        loginPanel.repaint();
-        loginWindow.add(loginPanel);
+        mainPanel.add(fieldsPanel);
+        mainPanel.add(buttonsPanel);
+        mainPanel.repaint();
+        authenticationWindow.add(mainPanel);
 
         // visibility
-        loginWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        loginWindow.setLocationRelativeTo(null);
-        loginWindow.pack();
-        loginWindow.setVisible(true);
-    }
-
-    public void logout() {
-        if (this.loggedIn) {
-            this.loggedIn = false;
-            user = null;
-        }
-    }
-
-    public void register() {
-
+        authenticationWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        authenticationWindow.setLocationRelativeTo(null);
+        authenticationWindow.pack();
+        authenticationWindow.setVisible(true);
     }
 
     // ================
@@ -201,11 +261,11 @@ public class Game extends JLayeredPane implements Constants {
             if (saveGame == JOptionPane.CANCEL_OPTION)
                 return;
         } else {
-            int register = confirmationPopup("Would you like to login or register to save your current game?");
+            int register = confirmationPopup("Would you like to login to save your current game?");
 
             // todo: BUG FIX - checks this.loggedIn before user gets chance to login
             if (register == JOptionPane.YES_OPTION) {
-                displayLoginWindow();
+                displayAuthenticationWindow(true);
                 // if successfully registered and/or logged in, repeat newGame()
                 if (this.loggedIn)
                     newGame(twoPlayer);
@@ -228,7 +288,7 @@ public class Game extends JLayeredPane implements Constants {
     public void setUpSettings() {
         if (this.loggedIn) {
             // apply settings from user
-
+            settings = user.getSettings();
         } else {
             setUpDefaultSettings();
         }
@@ -346,7 +406,14 @@ public class Game extends JLayeredPane implements Constants {
         menuItem = new JMenuItem(new AbstractAction(loggedIn ? "Logout" : "Login") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                displayLoginWindow();
+                displayAuthenticationWindow(true);
+            }
+        });
+        menu.add(menuItem);
+        menuItem = new JMenuItem(new AbstractAction("Register") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayAuthenticationWindow(false);
             }
         });
         menu.add(menuItem);
