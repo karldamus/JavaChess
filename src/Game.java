@@ -542,6 +542,9 @@ public class Game extends JLayeredPane implements Constants {
                         droppedPanel.repaint();
                         boardPanel.repaint();
                         boardPanel.revalidate();
+
+                        if (board.twoPlayer)
+                            board.moved = false;
                     }
                     else {
                         // move not ok! return draglabel to origin (clickedPanel)
