@@ -10,4 +10,8 @@ public class User {
     private void validatePassword(String password) {
 //        if (PasswordAuthentication)
     }
+
+    public Settings getSettings() {
+        return settings;
+    }
 }
