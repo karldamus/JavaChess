@@ -35,7 +35,7 @@ public class King extends Piece {
 
 
 
-        // check if opposing king is within 1 square of destination square
+        // todo: check if opposing king is within 1 square of destination square
         // https://stackoverflow.com/a/5802694/13280626
         // https://codereview.stackexchange.com/a/68638
 //        int startFile = (finalFile - 1 < 0) ? finalFile : finalFile-1;
