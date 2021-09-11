@@ -6,6 +6,8 @@ import stockfish.Client;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -22,6 +24,8 @@ public class Board implements Constants  {
     private boolean lastMoveEnPassant = false;
     private Movelist movelist = new Movelist();
     private Fen fenString;
+
+    Hashtable<int[], Piece[]> squaresUnderAttack = new Hashtable<int[], Piece[]>();
 
     // Game related variables
     public boolean moved = false;
@@ -216,6 +220,8 @@ public class Board implements Constants  {
 //            }
 //        }
 
+
+
         // check if individual Piece can legally move
         if (!(initialPiece.isLegalMove(this, initialRank, initialFile, finalRank, finalFile))) {
             System.out.println("Illegal Move");
@@ -280,7 +286,7 @@ public class Board implements Constants  {
      * @param white colour in question of being in check.
      * @return the number of pieces attacking the king.
      */
-    public int inCheck(boolean white) {
+    /** public int inCheck(boolean white) {
         int rankOfKing = -1;
         int fileOfKing = -1;
         int inCheck = 0;
@@ -319,7 +325,43 @@ public class Board implements Constants  {
         }
 
         return inCheck;
+    } */
+
+    public int inCheck(boolean white) {
+        int inCheckCounter = 0;
+        int rankOfKing, fileOfKing = -1;
+
+        // todo: create dictionary of all squares, with a Piece array of pieces that attack that square
+
+        // locate king on board
+        FIND_KING:
+        for (int rank = 0; rank < RANKS; rank++) {
+            for (int file = 0; file < FILES; file++) {
+                
+                Piece piece = null;
+                try {
+                    piece = this.getBoard()[rank][file].getPiece();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                
+                if ((piece != null) && (piece.isWhite() == white) && (Character.toLowerCase(piece.getFenSymbol()) == 'k')) {
+                    rankOfKing = rank;
+                    fileOfKing = file;
+
+                    break FIND_KING;
+                }
+                
+            }
+        }
+
+        // increase counter for every piece that attacks the king
+
+
+        return inCheckCounter;
     }
+
+
 
     /**
      * Determine best move according to Stockfish engine.
